@@ -1,0 +1,738 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: AI-Powered SOC Dashboard API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: threats
+    description: Threat and alert management
+  - name: incidents
+    description: Incident management
+  - name: logs
+    description: Log ingestion and querying
+  - name: analytics
+    description: Analytics and metrics
+  - name: response
+    description: Automated incident response (SOAR)
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /threats:
+    get:
+      operationId: listThreats
+      tags: [threats]
+      summary: List all detected threats/alerts
+      parameters:
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [critical, high, medium, low]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, investigating, resolved, false_positive]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: List of threats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Threat"
+    post:
+      operationId: createThreat
+      tags: [threats]
+      summary: Manually create a threat alert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateThreatRequest"
+      responses:
+        "201":
+          description: Threat created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Threat"
+
+  /threats/{id}:
+    get:
+      operationId: getThreat
+      tags: [threats]
+      summary: Get threat by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Threat details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Threat"
+    patch:
+      operationId: updateThreatStatus
+      tags: [threats]
+      summary: Update threat status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateThreatStatusRequest"
+      responses:
+        "200":
+          description: Updated threat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Threat"
+
+  /incidents:
+    get:
+      operationId: listIncidents
+      tags: [incidents]
+      summary: List all incidents
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, investigating, resolved, closed]
+      responses:
+        "200":
+          description: List of incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Incident"
+    post:
+      operationId: createIncident
+      tags: [incidents]
+      summary: Create an incident
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncidentRequest"
+      responses:
+        "201":
+          description: Incident created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+
+  /incidents/{id}:
+    get:
+      operationId: getIncident
+      tags: [incidents]
+      summary: Get incident by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Incident details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+    patch:
+      operationId: updateIncident
+      tags: [incidents]
+      summary: Update incident
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateIncidentRequest"
+      responses:
+        "200":
+          description: Updated incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+
+  /logs:
+    get:
+      operationId: listLogs
+      tags: [logs]
+      summary: List security logs
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [auth, network, system, firewall, web]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        "200":
+          description: List of logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SecurityLog"
+
+  /logs/simulate:
+    post:
+      operationId: simulateAttack
+      tags: [logs]
+      summary: Simulate a cyber attack for testing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimulateAttackRequest"
+      responses:
+        "200":
+          description: Attack simulation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulateAttackResponse"
+
+  /analytics/summary:
+    get:
+      operationId: getAnalyticsSummary
+      tags: [analytics]
+      summary: Get SOC summary statistics
+      responses:
+        "200":
+          description: Analytics summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsSummary"
+
+  /analytics/top-attackers:
+    get:
+      operationId: getTopAttackers
+      tags: [analytics]
+      summary: Get top attacking IP addresses
+      responses:
+        "200":
+          description: Top attacker IPs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttackerStat"
+
+  /analytics/threat-timeline:
+    get:
+      operationId: getThreatTimeline
+      tags: [analytics]
+      summary: Get threat counts over time (last 24h)
+      responses:
+        "200":
+          description: Threat timeline data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimelinePoint"
+
+  /analytics/threat-distribution:
+    get:
+      operationId: getThreatDistribution
+      tags: [analytics]
+      summary: Get threat distribution by type
+      responses:
+        "200":
+          description: Threat type distribution
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ThreatDistribution"
+
+  /response/block-ip:
+    post:
+      operationId: blockIp
+      tags: [response]
+      summary: Block an attacker IP (SOAR action)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlockIpRequest"
+      responses:
+        "200":
+          description: IP block result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseActionResult"
+
+  /response/blocked-ips:
+    get:
+      operationId: listBlockedIps
+      tags: [response]
+      summary: List all blocked IP addresses
+      responses:
+        "200":
+          description: List of blocked IPs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlockedIp"
+
+  /response/anomaly-detect:
+    post:
+      operationId: runAnomalyDetection
+      tags: [response]
+      summary: Run ML anomaly detection on recent logs
+      responses:
+        "200":
+          description: Anomaly detection results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnomalyDetectionResult"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    Threat:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        type:
+          type: string
+          enum: [brute_force, sql_injection, malware, port_scan, phishing, ddos, lateral_movement, data_exfiltration, anomaly]
+        status:
+          type: string
+          enum: [open, investigating, resolved, false_positive]
+        sourceIp:
+          type: string
+        targetHost:
+          type: string
+        affectedUser:
+          type: string
+        riskScore:
+          type: integer
+        mitreTactic:
+          type: string
+        mitreId:
+          type: string
+        detectedAt:
+          type: string
+        resolvedAt:
+          type: string
+        incidentId:
+          type: integer
+        rawLog:
+          type: string
+      required: [id, title, severity, type, status, sourceIp, riskScore, detectedAt]
+
+    CreateThreatRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        type:
+          type: string
+          enum: [brute_force, sql_injection, malware, port_scan, phishing, ddos, lateral_movement, data_exfiltration, anomaly]
+        sourceIp:
+          type: string
+        targetHost:
+          type: string
+      required: [title, severity, type, sourceIp]
+
+    UpdateThreatStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [open, investigating, resolved, false_positive]
+        notes:
+          type: string
+      required: [status]
+
+    Incident:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        status:
+          type: string
+          enum: [open, investigating, resolved, closed]
+        assignedTo:
+          type: string
+        affectedSystems:
+          type: array
+          items:
+            type: string
+        threatIds:
+          type: array
+          items:
+            type: integer
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentTimelineEntry"
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        resolvedAt:
+          type: string
+        responseActions:
+          type: array
+          items:
+            type: string
+      required: [id, title, severity, status, createdAt, updatedAt]
+
+    CreateIncidentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        assignedTo:
+          type: string
+        affectedSystems:
+          type: array
+          items:
+            type: string
+        threatIds:
+          type: array
+          items:
+            type: integer
+      required: [title, severity]
+
+    UpdateIncidentRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [open, investigating, resolved, closed]
+        assignedTo:
+          type: string
+        notes:
+          type: string
+        responseActions:
+          type: array
+          items:
+            type: string
+
+    IncidentTimelineEntry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        action:
+          type: string
+        actor:
+          type: string
+        notes:
+          type: string
+      required: [timestamp, action]
+
+    SecurityLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [auth, network, system, firewall, web]
+        message:
+          type: string
+        sourceIp:
+          type: string
+        targetHost:
+          type: string
+        user:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low, info]
+        timestamp:
+          type: string
+        raw:
+          type: string
+        anomalyScore:
+          type: number
+        isAnomaly:
+          type: boolean
+      required: [id, type, message, timestamp]
+
+    SimulateAttackRequest:
+      type: object
+      properties:
+        attackType:
+          type: string
+          enum: [brute_force, sql_injection, malware, port_scan, ddos, phishing]
+        targetHost:
+          type: string
+        intensity:
+          type: string
+          enum: [low, medium, high]
+      required: [attackType]
+
+    SimulateAttackResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        logsGenerated:
+          type: integer
+        threatsDetected:
+          type: integer
+        attackType:
+          type: string
+        sourceIp:
+          type: string
+        message:
+          type: string
+      required: [success, logsGenerated, threatsDetected, attackType, message]
+
+    AnalyticsSummary:
+      type: object
+      properties:
+        totalThreats:
+          type: integer
+        openThreats:
+          type: integer
+        criticalThreats:
+          type: integer
+        resolvedThreats:
+          type: integer
+        totalIncidents:
+          type: integer
+        openIncidents:
+          type: integer
+        blockedIps:
+          type: integer
+        logsIngested:
+          type: integer
+        anomaliesDetected:
+          type: integer
+        meanTimeToDetect:
+          type: number
+        meanTimeToResolve:
+          type: number
+      required: [totalThreats, openThreats, criticalThreats, resolvedThreats, totalIncidents, openIncidents, blockedIps, logsIngested, anomaliesDetected]
+
+    AttackerStat:
+      type: object
+      properties:
+        ip:
+          type: string
+        count:
+          type: integer
+        severity:
+          type: string
+        lastSeen:
+          type: string
+        country:
+          type: string
+        isBlocked:
+          type: boolean
+      required: [ip, count, severity, lastSeen, isBlocked]
+
+    TimelinePoint:
+      type: object
+      properties:
+        hour:
+          type: string
+        critical:
+          type: integer
+        high:
+          type: integer
+        medium:
+          type: integer
+        low:
+          type: integer
+      required: [hour, critical, high, medium, low]
+
+    ThreatDistribution:
+      type: object
+      properties:
+        type:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+      required: [type, count, percentage]
+
+    BlockIpRequest:
+      type: object
+      properties:
+        ip:
+          type: string
+        reason:
+          type: string
+        threatId:
+          type: integer
+        duration:
+          type: string
+          enum: [1h, 24h, 7d, permanent]
+      required: [ip, reason]
+
+    BlockedIp:
+      type: object
+      properties:
+        id:
+          type: integer
+        ip:
+          type: string
+        reason:
+          type: string
+        blockedAt:
+          type: string
+        duration:
+          type: string
+        unblockedAt:
+          type: string
+        threatId:
+          type: integer
+        isActive:
+          type: boolean
+      required: [id, ip, reason, blockedAt, isActive]
+
+    ResponseActionResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        action:
+          type: string
+        target:
+          type: string
+        timestamp:
+          type: string
+        message:
+          type: string
+        ruleApplied:
+          type: string
+      required: [success, action, target, timestamp, message]
+
+    AnomalyDetectionResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        logsAnalyzed:
+          type: integer
+        anomaliesFound:
+          type: integer
+        anomalies:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnomalyItem"
+        modelInfo:
+          type: string
+        timestamp:
+          type: string
+      required: [success, logsAnalyzed, anomaliesFound, anomalies, timestamp]
+
+    AnomalyItem:
+      type: object
+      properties:
+        logId:
+          type: integer
+        sourceIp:
+          type: string
+        anomalyScore:
+          type: number
+        reason:
+          type: string
+        timestamp:
+          type: string
+      required: [logId, anomalyScore, reason, timestamp]
