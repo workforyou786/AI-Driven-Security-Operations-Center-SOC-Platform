@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Deep cyber dark theme */
+  --color-background: hsl(222 47% 4%);
+  --color-foreground: hsl(210 40% 98%);
+  
+  --color-card: hsl(222 47% 7%);
+  --color-card-foreground: hsl(210 40% 98%);
+  
+  --color-popover: hsl(222 47% 7%);
+  --color-popover-foreground: hsl(210 40% 98%);
+  
+  --color-primary: hsl(199 89% 48%); /* Neon Cyan */
+  --color-primary-foreground: hsl(222 47% 4%);
+  
+  --color-secondary: hsl(222 47% 15%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+  
+  --color-muted: hsl(222 47% 12%);
+  --color-muted-foreground: hsl(215 20% 65%);
+  
+  --color-accent: hsl(199 89% 48%);
+  --color-accent-foreground: hsl(222 47% 4%);
+  
+  --color-destructive: hsl(350 89% 60%); /* Alert Red */
+  --color-destructive-foreground: hsl(210 40% 98%);
+
+  --color-warning: hsl(35 92% 60%); /* Warning Orange */
+  --color-success: hsl(142 71% 45%); /* Safe Green */
+  
+  --color-border: hsl(222 47% 16%);
+  --color-input: hsl(222 47% 16%);
+  --color-ring: hsl(199 89% 48%);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+:root {
+  --background: 222 47% 4%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 7%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 7%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 199 89% 48%;
+  --primary-foreground: 222 47% 4%;
+  --secondary: 222 47% 15%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 222 47% 12%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 199 89% 48%;
+  --accent-foreground: 222 47% 4%;
+  --destructive: 350 89% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 222 47% 16%;
+  --input: 222 47% 16%;
+  --ring: 199 89% 48%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased min-h-screen selection:bg-primary/30 selection:text-primary-foreground;
+    /* subtle cyber grid background pattern */
+    background-image: 
+      linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+    background-attachment: fixed;
+  }
+}
+
+/* Custom Scrollbar for data-dense panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Recharts Customization to fit theme */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+.recharts-default-tooltip {
+  @apply !bg-card !border-border !border !rounded-lg !shadow-xl !text-sm backdrop-blur-md;
+  background-color: hsl(var(--card) / 0.9) !important;
+}
+.recharts-tooltip-item-name,
+.recharts-tooltip-item-value {
+  @apply !text-foreground font-mono;
+}
