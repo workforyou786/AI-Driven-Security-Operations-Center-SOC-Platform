@@ -1,0 +1,170 @@
+AI-Powered Security Operations Center (SOC) with Automated Incident Response
+Project Goal
+Build a mini Security Operations Center (SOC) that:
+
+Collects logs from systems
+
+Detects cyber attacks
+
+Uses machine learning to detect anomalies
+
+Automatically responds to threats
+
+This project demonstrates skills in:
+
+SOC monitoring
+
+SIEM implementation
+
+Incident response
+
+SOAR automation
+
+Threat detection
+
+These are exactly what **Ernst & Young Tech Consulting Cyber teams work on.
+
+Project Architecture
+Endpoints / Servers
+        │
+        │ Logs
+        ▼
+   Log Collector (Filebeat)
+        │
+        ▼
+  SIEM Platform (ELK Stack)
+        │
+        ▼
+ Threat Detection Engine
+ (Python + ML)
+        │
+        ▼
+ SOAR Automation
+ (Auto Block IP / Alert)
+        │
+        ▼
+ SOC Dashboard
+ (Kibana)
+Technologies to Use
+Security Monitoring
+ELK Stack
+
+Elasticsearch
+
+Logstash
+
+Kibana
+
+Detection Tools
+Wazuh (EDR + SIEM)
+
+Networking Tools
+Wireshark
+
+Suricata IDS
+
+Programming
+Python
+
+Machine Learning
+Scikit-learn
+
+Isolation Forest anomaly detection
+
+Key Features of the Project
+1. Log Collection System
+Collect logs from:
+
+Linux servers
+
+Web servers
+
+Firewall logs
+
+Example logs:
+
+login attempts
+
+suspicious commands
+
+network connections
+
+2. Attack Simulation
+Simulate cyber attacks such as:
+
+Brute force login
+
+SQL injection
+
+Malware execution
+
+Port scanning
+
+Use tools like:
+
+Nmap
+
+Metasploit
+
+Hydra
+
+3. SIEM Dashboard
+Use Kibana to build dashboards showing:
+
+Suspicious login attempts
+
+Top attacking IP addresses
+
+Malware alerts
+
+Network anomalies
+
+This simulates a real SOC monitoring dashboard.
+
+4. Machine Learning Threat Detection
+Build an anomaly detection model that detects unusual network behavior.
+
+Example:
+
+normal traffic → baseline
+
+sudden spike → suspicious activity
+
+Algorithm example:
+
+Isolation Forest
+
+Random Forest
+
+Python example:
+
+from sklearn.ensemble import IsolationForest
+
+model = IsolationForest(contamination=0.02)
+model.fit(network_data)
+
+predictions = model.predict(network_data)
+5. Automated Incident Response (SOAR)
+Create automation scripts that:
+
+If attack detected:
+
+Block attacker IP
+
+Send alert email
+
+Create incident ticket
+
+Example automation:
+
+iptables -A INPUT -s <attacker_ip> -j DROP
+SOC Analyst Workflow Simulation
+Your project should show:
+
+1️⃣ Log ingestion
+2️⃣ Alert detection
+3️⃣ Threat investigation
+4️⃣ Incident response
+5️⃣ Reporting
+
+This exactly matches SOC L2 responsibilities in the job description.
